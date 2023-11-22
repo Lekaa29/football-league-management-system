@@ -19,6 +19,9 @@
     <label for="password">Password:</label>
     <input type="password" id="password" name="password" required>
 
+    {% if message %}
+    <a id="accountcreated">{{ message }}</a>
+    {% endif %}
     <button type="submit">Login</button>
   </form>
 </div>
