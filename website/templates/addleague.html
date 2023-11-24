@@ -1,0 +1,32 @@
+
+{% extends "layout.html" %}
+
+ {% block title %}
+Add League
+ {% endblock %}
+
+{% block main %} 
+        <div class="projects">
+            <div class="window">
+                <form class="addleague" action="/addleague" method="post">
+                <h2>New Tournament</h2>
+
+                <label for="leaguename">League Name:</label>
+                <input type="text" id="leaguename" name="leaguename" required>
+                
+                <label for="teamscount">Number Of Teams:</label>
+                <input type="Number" id="teamscount" name="teamscount" required>
+
+                {% if message %}
+                <a id="error">{{ message }}</a> 
+                {% endif %}
+                
+                    <button type="submit">Add League</button>
+                </form>
+                
+            </div>
+        </div>
+        
+
+{% endblock %}
+ 
