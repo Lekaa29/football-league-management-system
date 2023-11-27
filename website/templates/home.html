@@ -8,12 +8,27 @@ Home
 {% block main %} 
         <div class="projects">
             <div class="project-container">
-                <h2>Leagues</h2>
-                <form class="addbutton" action="/addleague" method="get">
-                    <button type="submit">Add league</button>
-                </form>
+                <div class="top">
+                    <h2>Leagues</h2>
+                    <form class="addbutton" action="/addleague" method="get">
+                        <button type="submit">Add</button>
+                    </form>
+                </div>
+                <p id="line">_________________________</p>
                 <ul>
-                    <p id="line">_________________________</p>
+                    {% if user.leagues %}
+                    {% for league in user.leagues %}
+                    <div class="project-container">
+                        <div class="top">
+                            <li class="list-home-item">{{ league.name }}</li>
+                            <form class="addbutton edit-league-form" action="/league-main" method="post" class="edit-league-form">
+                                <input type="hidden" name="leagueid" value="{{ league.id }}">
+                                <button type="button" onclick="leaguemain({{ league.id }}, this)">Edit</button>
+                            </form>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% endif %}
                     <li> </li>
                     
                     <!-- Add more projects as needed -->
@@ -21,13 +36,15 @@ Home
             </div>
     
             <div class="project-container">
-                <h2>Tournaments</h2>
-                <form class="addbutton" action="/addtournament" method="get">
-                    <button type="submit">Add tournament</button>
-                </form>
+                <div class="top">
+                    <h2>Tournaments</h2>
+                    <form class="addbutton" action="/addtournament" method="get">
+                        <button type="submit">Add</button>
+                    </form>
+                </div>
                 <p id="line">_________________________</p>
                 <ul>
-                    <li> </li>
+                
                     <!-- Add more projects as needed -->
                 </ul>
             </div>

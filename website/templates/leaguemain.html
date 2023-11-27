@@ -1,0 +1,81 @@
+
+{% extends "layout.html" %}
+
+ {% block title %}
+Home
+ {% endblock %}
+
+{% block main %} 
+        <div class="projects">
+            <h0 style="margin: 0;">{{ league.name }}</h0>
+            <h0></h0>
+        </div>
+        
+        <div class="projects">
+
+            <div class="project-container">
+                <div class="top">
+                    <h2>Teams</h2>
+                    <form class="addbutton" action="/addteam" method="get">
+                        <button type="submit">Add</button>
+                    </form>
+                </div>
+
+                <p id="line">_________________________</p>
+                <ul>
+                    <li> </li>
+                    
+                    <!-- Add more projects as needed -->
+                </ul>
+            </div>
+    
+            <div class="project-container">
+                <div class="top">
+                    <h2>Table</h2>
+                    <form class="addbutton" action="/view-league-table" method="get">
+                        <button type="submit">View</button>
+                    </form>
+                </div>
+
+                <p id="line">_________________________</p>
+                <ul>
+                    <li> </li>
+                    <!-- Add more projects as needed -->
+                </ul>
+            </div>
+        </div>
+
+        <div class="projects">
+            <div class="project-container">
+                <div class="top">
+                    <h2>Goalscorers</h2>
+                    <form class="addbutton" action="/view-league-goalscorers" method="get">
+                        <button type="submit">View</button>
+                    </form>
+                </div>
+                <p id="line">_________________________</p>
+                <ul>
+                    <li> </li>
+                    
+                    <!-- Add more projects as needed -->
+                </ul>
+            </div>
+    
+            <div class="project-container">
+                <div class="top">
+                    <h2>Fixtures</h2>
+                    <form class="addbutton" action="/addresult" method="get">
+                        <button type="submit">Add</button>
+                    </form>
+                </div>
+                <p id="line">_________________________</p>
+                <ul>
+                    <li> </li>
+                    <!-- Add more projects as needed -->
+                </ul>
+            </div>
+        </div>
+        
+
+{% endblock %}
+ 

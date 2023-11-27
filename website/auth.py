@@ -22,8 +22,8 @@ def login():
             if check_password_hash(user.password, password):
                 login_user(user, remember=True)
                 return redirect(url_for("views.home"))
-            else:
-                render_template("login.html", message="Incorrect password or username!") 
+    
+        return render_template("login.html", message="Incorrect password or username!") 
         
     else:
         return render_template("login.html")
