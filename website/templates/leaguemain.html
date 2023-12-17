@@ -6,11 +6,31 @@ Home
  {% endblock %}
 
 {% block main %} 
-        <div class="projects">
-            <h0 style="margin: 0;">{{ league.name }}</h0>
-            <h0></h0>
-        </div>
-        
+        <div class="projects title">
+            <div class="top">
+                <h1 style="margin: 0;">{{ league.name }} </h1>
+                
+
+                <form action="/change-season">
+                    <select type="submit" id="cars" name="cars">
+                        {% for season in league.seasons %}
+                      <option value="{{ season.id }}">{{ season.name }}</option>
+                      {% endfor %}
+                    </select>
+                </form>
+
+                <form class="addbutton" action="/add-season" method="get">
+                    <input type="hidden" name="league_id" value="{{ league }}">
+                    <button type="submit">New Season</button>
+                </form>
+
+
+            </div>
+            <div class="top">
+                <h1></h1>
+            </div>
+        </div> 
+
         <div class="projects">
 
             <div class="project-container">

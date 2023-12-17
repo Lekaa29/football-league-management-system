@@ -1,0 +1,31 @@
+
+{% extends "layout.html" %}
+
+ {% block title %}
+Home
+ {% endblock %}
+
+{% block main %} 
+        <div class="projects">
+            <div class="window">
+                <form class="addleague" action="/add-season" method="post">
+                <h2>{{ league.name }}</h2>
+                <h2>Add Season</h2>
+                
+                
+
+                <label for="name">Season name (ex. 23/24):</label>
+                <input type="text" id="name" name="name" required>
+
+                <input type="hidden" name="league_id" value="{{ league.id }}">
+
+                    <button type="submit">Add</button>
+                </form>
+                
+            </div>
+        </div>
+
+        
+
+{% endblock %}
+ 

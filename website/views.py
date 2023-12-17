@@ -1,6 +1,6 @@
 from flask_login import login_required, current_user
 from flask import Blueprint, render_template, request, redirect, url_for
-from .models import User, Tournament, League
+from .models import User, Tournament, League, Season
 from werkzeug.security import generate_password_hash, check_password_hash
 from . import db 
 from flask_login import login_user, login_required, logout_user, current_user
@@ -44,12 +44,40 @@ def addleague():
             
 @views.route("/league-main", methods=["GET","POST"])  
 def edit_league():
-    if request.method == "POST":
-        league_id = request.form['leagueid']
-        league = League.query.get(league_id)
-        
-        return render_template("leaguemain.html", user=current_user,league=league)
+    
+    league_id = request.form['leagueid']
+    league = League.query.get(league_id)
+    seasons = Season.query.get(league_id)
+    print(seasons)
+    if seasons:
+        return render_template("leaguemain.html", seasons=seasons, user=current_user,league=league)
     else:
-        return render_template("main.html", user=current_user)
+        return render_template("add-season.html", user=current_user, league=league)
+   
+    
+@views.route("/add-season", methods=["GET", "POST"])  
+def add_season():
+    if request.method == "POST":
+        print(request.form)
+        league_id = request.form["league_id"]
+        name = request.form["name"]
+        new_season = Season(name=name, league_id=league_id)
+        db.session.add(new_season)
+        db.session.commit()
+        
+        league = League.query.get(league_id)
+        seasons = Season.query.get(league_id)
+        
+        return render_template("leaguemain.html", seasons=seasons, user=current_user,league=league)
+    if request.method == "GET":
+        print(1,request.form,1)
+        league_id = request.form('league_id')
+        print("aaaa:",league_id)
+        league = League.query.get(league_id)
+        return render_template("add-season.html", user=current_user, league=league)
+   
+
+        
+    
         
     
