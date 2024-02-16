@@ -32,6 +32,19 @@ class Season(db.Model):
     
 class Team(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50))
+    name = db.Column(db.String(50), unique=True)
+    stadium_name = db.Column(db.String(50))
+    home_kit_first = db.Column(db.String(7), nullable=False)
+    home_kit_second = db.Column(db.String(7), nullable=False)
+    away_kit_first = db.Column(db.String(7), nullable=False)
+    away_kit_second = db.Column(db.String(7), nullable=False)
+    logo = db.Column(db.LargeBinary, default=lambda: b'<default_image_bytes>')
     season_id = db.Column(db.Integer, db.ForeignKey("season.id"))
 
+class Player(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50))
+    surname = db.Column(db.String(50))
+    number = db.Column(db.Integer)
+    image = db.Column(db.LargeBinary, default=lambda: b'<default_image_bytes>')
+    team_id = db.Column(db.Integer, db.ForeignKey("team.id"))

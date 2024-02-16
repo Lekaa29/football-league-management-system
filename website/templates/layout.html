@@ -39,18 +39,19 @@
     function openNav() {
         document.getElementById("main").style.marginLeft = "15%";
         document.getElementById("mySidebar").style.width = "15%";
+        
+        document.getElementById("mySidebar").style.left = "0%";
         document.getElementById("mySidebar").style.display = "block";
         document.getElementById("openNav").style.display = 'none';
     }
 
     function closeNav() {
     var c = document.getElementById('mySidebar');
-    c.classList.add('sidebar-animate-left')
-
-
+    document.getElementById("mySidebar").style.left = "-15%";
+    
     document.getElementById("main").style.marginLeft = "0%";
-        document.getElementById("mySidebar").style.display = "none";
         document.getElementById("openNav").style.display = "inline-block";
+
     }
     </script>
 

@@ -1,0 +1,210 @@
+
+{% extends "layout.html" %}
+
+ {% block title %}
+Add Team
+ {% endblock %}
+
+ {% block head %}
+ <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Football Team</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"], input[type="color"] {
+            width: 200px;
+            margin-bottom: 10px;
+        }
+        input[type="number"] {
+            width: 50px;
+            margin-bottom: 10px;
+        }
+        #players-table {
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+        #players-table th, #players-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        #add-player {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+ {% endblock %}
+
+
+{% block main %} 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    
+    <title>Create Football Team</title>
+    <style>
+        body {
+            font-family: "Lato", sans-serif;
+            font-size: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"], input[type="color"] {
+            width: 200px;
+            margin-bottom: 10px;
+        }
+        input[type="number"] {
+            width: 50px;
+            margin-bottom: 10px;
+        }
+        input[type="color"] {
+            height: 30px;
+            width: 30px;
+            padding: 0;
+        }
+        #players-table {
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+        #players-table th, #players-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        #add-player {
+            margin-top: 10px;
+        }
+
+        .project-container {
+           
+            max-width: 700px;
+          }
+
+        button.remove-player {
+            background-color: red;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            padding: 10px;
+        }
+        button.remove-player:hover {
+            background-color: red;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            padding: 10px;
+        }
+
+        button.#create-team {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="projects">
+        <div class="project-container">
+    <h1>Create Football Team</h1>
+    <form class="addbutton" action="/addteam" method="post" enctype="multipart/form-data">
+
+        <input type="hidden" name="league_id" value="{{ league_id }}">
+        <input type="hidden" name="season_id" value="{{ season_id }}">
+        
+        <div>
+            <div style="display: flex; align-items: center;">
+                <div style="flex: 1;">
+                    <label for="team-name">Team Name:</label>
+                    <input type="text" id="team-name" name="team_name">
+                    <label for="stadium-name">Stadium Name:</label>
+                    <input type="text" id="stadium-name" name="stadium_name">
+                </div>
+                <div style="flex: 1;">
+                    <label for="team-logo">Logo:</label>
+                        <input type="file" name="image">
+                        <button type="submit">Upload Image</button>                
+                </div>
+            </div>
+        </div>
+
+        <label>Home Kit Colors:</label>
+        <input type="color" name="home_kit_primary_color" value="#ff0000">
+        <input type="color" name="home_kit_secondary_color" value="#ffffff">
+        <label>Away Kit Colors:</label>
+        <input type="color" name="away_kit_primary_color" value="#0000ff">
+        <input type="color" name="away_kit_secondary_color" value="#ffff00">
+        
+        <h2>Players:</h2>
+        <table id="players-table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Surname</th>
+                    <th>Number</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><input type="text" name="player_name[]"></td>
+                    <td><input type="text" name="player_surname[]"></td>
+                    <td><input type="number" name="player_number[]"></td>
+                </tr>
+            </tbody>
+        </table>
+        <button type="button" id="add-player">Add Player</button>
+        <button type="submit">Create Team</button>
+    </form>
+
+    {% if message %}
+    <a id="error" style="color:red">{{ message }}</a> 
+    {% endif %}
+
+
+</div>
+</div>
+    <script>
+        document.getElementById('add-player').addEventListener('click', function() {
+            var tableBody = document.querySelector('#players-table tbody');
+            var newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td><input type="text" name="player_name[]"></td>
+                <td><input type="text" name="player_surname[]"></td>
+                <td><input type="number" name="player_number[]"></td>
+                <td><button type="button" class="remove-player">Remove</button></td>
+            `;
+            tableBody.appendChild(newRow);
+            newRow.querySelector('.remove-player').addEventListener('click', function() {
+                tableBody.removeChild(newRow);
+            });
+        });
+    
+        // Add event listener for existing remove buttons
+        document.querySelectorAll('.remove-player').forEach(function(button) {
+            button.addEventListener('click', function() {
+                button.closest('tr').remove();
+            });
+        });
+    </script>
+</body>
+
+{% endblock %}
+ 

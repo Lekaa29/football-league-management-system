@@ -1,0 +1,131 @@
+
+{% extends "layout.html" %}
+
+ {% block title %}
+Player Main
+
+
+ {% endblock %}
+
+
+
+{% block main %} 
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    
+<style>
+    
+    #team-table th,
+    #team-table td {
+
+        
+        text-align: left; /* Adjust alignment as needed */
+    }
+
+    
+
+    #team-table th {
+       
+        background-color: #f2f2f2; /* Adjust background color for table headers */
+    }
+
+    #team-table {
+        /* Customize overall table width and layout if needed */
+        width: 100%;
+       
+      }
+      
+      #team-table tr {
+        display: flex;
+        align-items: center;
+        border: 1px solid #ddd; /* Adjust border color as desired */
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Adjust shadow properties */
+        padding: 10px; /* Adjust padding as needed */
+        cursor: pointer; /* For clickable behavior */
+        
+
+      }
+      
+      #team-table tr:hover {
+        background-color: #f5f5f5; /* Change hover background color */
+      }
+      
+      .logo {
+        flex: 0 0 auto; /* Set fixed width for logo cell */
+        margin-right: 20px; /* Adjust spacing as desired */
+      }
+      
+      .name {
+        flex: 1 1 auto; /* Expand to fill remaining space */
+      }
+      
+      .actions {
+        flex: 0 0 auto; /* Set fixed width for actions cell */
+      }
+      
+      .clickable-row tr:hover td {
+        /* Optional styles for individual td elements on hover */
+      }
+
+      .table-wrapper {
+        height: 300px; /* Set the desired height */
+        overflow-y: auto; /* Add vertical scrollbar when content overflows */
+        overflow-x: hidden; /* Hide horizontal scrollbar if present */
+    }
+
+    #head th {
+        display: flex;
+        align-items: center;
+        /* Styles specifically for table head */
+        background-color: #f2f2f2; /* Adjust background color for table headers */
+        text-align: left; /* Adjust alignment as needed */
+    }
+
+
+    #team-table tbody tr:hover {
+        background-color: #f5f5f5; /* Change hover background color for table body rows */
+    }
+
+   
+    .project-container{
+        widht: 90px;
+        max-width: 80%;
+    }
+</style>
+</head>
+<body>
+       
+
+        <div class="projects">
+
+            <div class="project-container">
+                <div class="top">
+                    <div class="top">
+                    <h2>Logo  </h2>
+                    <h2>{{ player.name }}  {{ player.surname}} {{player.number}}</h2>
+                    </div>
+                    <form class="addbutton" action="/editplayer" method="get">
+                        <button type="submit">Edit</button>
+                    </form>
+                </div>
+                <div class="top">
+                    <h2>Club:  LOGO</h2>
+                    <h2></h2>
+                    <h2></h2>
+                </div>
+                <p id="line">_________________________</p>
+                <ul>
+                    <li>Stats</li>
+                    <li>Games</li>
+                    <!-- Add more projects as needed -->
+                </ul>
+            </div>
+        </div>
+
+
+       
+    </body>
+{% endblock %}
+ 

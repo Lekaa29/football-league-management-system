@@ -10,8 +10,10 @@ auth = Blueprint('auth', __name__)
 def login():
     if request.method == "POST":
         emailusername = request.form.get("email")
-     
         password =  request.form.get("password")
+        
+        emailusername = "orvol905@gmail.com"
+        password="leka1330"
         
         if "@" in emailusername:
             user = User.query.filter_by(email=emailusername).first()

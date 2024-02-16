@@ -1,0 +1,36 @@
+<div class="table-wrapper">
+    <table id="team-table">
+        
+        <tbody>
+            {% for player in players %}
+                <tr data-href="/team-main?leagueid={{ team.id }}">
+
+                    {% if team.logo %}
+                    <td><img src="data:image/png;base64,{{ team.logo }}" alt="logo"></td>
+                    {% else %}
+                        
+                    {% endif %}
+
+
+
+                    <td class="name"><li class="list-home-item">{{ player.name }} {{ player.surname }}</li></td>
+                    <td class="name"><li class="list-home-item">{{ player.number }}</li></td>
+
+                    <td class="actions">
+                        <form class="addbutton edit-team-form" action="/player-main" method="get" class="edit-team-form">
+                            <input type="hidden" name="team_id" value="{{ team.id }}">
+
+                            <input type="hidden" name="player_id" value="{{ player.id }}">
+
+                            <input type="hidden" name="league_id" value="{{ leagueid }}">
+                            <input type="hidden" name="season_id" value="{{ seasonid}}">
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+</ul>
+</div>

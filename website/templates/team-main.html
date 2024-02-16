@@ -16,6 +16,21 @@ League Main
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     
 <style>
+    
+    #team-table th,
+    #team-table td {
+
+        
+        text-align: left; /* Adjust alignment as needed */
+    }
+
+    
+
+    #team-table th {
+       
+        background-color: #f2f2f2; /* Adjust background color for table headers */
+    }
+
     #team-table {
         /* Customize overall table width and layout if needed */
         width: 100%;
@@ -59,28 +74,25 @@ League Main
         overflow-y: auto; /* Add vertical scrollbar when content overflows */
         overflow-x: hidden; /* Hide horizontal scrollbar if present */
     }
+
+    #head th {
+        display: flex;
+        align-items: center;
+        /* Styles specifically for table head */
+        background-color: #f2f2f2; /* Adjust background color for table headers */
+        text-align: left; /* Adjust alignment as needed */
+    }
+
+
+    #team-table tbody tr:hover {
+        background-color: #f5f5f5; /* Change hover background color for table body rows */
+    }
 </style>
 </head>
 <body>
         <div class="projects title">
             <div class="top">
-                <h1 style="margin: 0;">{{ league.name }} </h1>
-                
-
-                <form action="/change-season" method="POST">
-                    <input type="hidden" name="league_id" value="{{ league_id }}">
-                    <select type="submit" id="season" name="season">
-                        {% for season in league.seasons %}
-                      <option value="{{ season.id }}">{{ season.name }}</option>
-                      {% endfor %}
-                    </select>
-                </form>
-
-                <form class="addbutton" action="/add-season" method="get">
-                    <input type="hidden" name="league_id" value="{{ league.id }}">
-                    <button type="submit">New Season</button>
-                </form>
-
+                <h1 style="margin: 0;">{{ team.name }} </h1>
 
             </div>
             <div class="top">
@@ -92,11 +104,12 @@ League Main
 
             <div class="project-container">
                 <div class="top">
-                    <h2>Teams</h2>
-                    <form class="addbutton" action="/addteam" method="get">
+                    <h2>Players</h2>
+                    
+                    <form class="addbutton" action="/addplayer" method="get">
 
-                        <input type="hidden" name="league_id" value="{{ league.id }}">
-                        <input type="hidden" name="season_id" value="{{ league.seasons[0].id }}">
+                        <input type="hidden" name="league_id" value="{{ leagueid }}">
+                        <input type="hidden" name="season_id" value="{{ seasonid}}">
 
                         <button type="submit">Add</button>
                     </form>
@@ -104,12 +117,22 @@ League Main
 
                 <p id="line">_________________________</p>
                 <ul>
-                    
+                 
+                    <div style="display: flex;
+                    align-items: center;
+                    justify-content: space-between; /* Space out the items */
+                    text-align: left;
+                    flex: 1 1 auto;
+                    padding: 10px; /* Add padding for spacing */">
+                        <h4>Name</h4>
+                        <h4>Number</h4>
+                        <h4></h4>
+                    </div>
                     <div class="table-wrapper">
                         <table id="team-table">
                             <tbody>
-                                {% for team in seasons.teams %}
-                                <tr class="clickable-row" data-leagueid="{{ league.id }}" data-seasonid="{{ league.seasons[0].id }}" data-teamid="{{ team.id }}">
+                                {% for player in players %}
+                                <tr class="clickable-row" data-playerid="{{ player.id }}" data-leagueid="{{ leagueid }}" data-seasonid="{{ seasonid }}" data-teamid="{{ team.id }}">
                                         {% if team.logo %}
                                         {% else %}
                                             
@@ -117,7 +140,8 @@ League Main
 
 
 
-                                        <td class="name"><li class="list-home-item">{{ team.name }}</li></td>
+                                        <td class="name"><li class="list-home-item">{{ player.name }} {{ player.surname }}</li></td>
+                                        <td class="name"><li class="list-home-item">{{ player.number }}</li></td>
                                         <td class="actions">
                                             
                                             
@@ -178,7 +202,8 @@ League Main
             </div>
         </div>
 
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script>
             $(document).ready(function() {
                 $(document).on("click", ".clickable-row", function() {
@@ -186,17 +211,18 @@ League Main
                     var leagueId = $(this).data('leagueid');
                     var seasonId = $(this).data('seasonid');
                     var teamId = $(this).data('teamid');
+                    var playerId = $(this).data('playerid');
         
                     // Create a form dynamically
-                    var form = $('<form action="/team-main" method="POST"></form>');
+                    var form = $('<form action="/player-main" method="POST"></form>');
                     form.append('<input type="hidden" name="team_id" value="' + teamId + '">');
                     form.append('<input type="hidden" name="league_id" value="' + leagueId + '">');
                     form.append('<input type="hidden" name="season_id" value="' + seasonId + '">');
+                    form.append('<input type="hidden" name="player_id" value="' + playerId + '">');
                     form.appendTo('body').submit();
                 });
             });
         </script>
-
     </body>
 {% endblock %}
  
