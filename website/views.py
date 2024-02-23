@@ -1,11 +1,12 @@
 from flask_login import login_required, current_user
 from flask import Blueprint, render_template, request, redirect, url_for
-from .models import User, Tournament, League, Season, Team, Player
+from .models import User, Tournament, League, Season, Team, Player, Match, Goal
 from werkzeug.security import generate_password_hash, check_password_hash
 from . import db 
 from flask_login import login_user, login_required, logout_user, current_user
 import json
 import base64
+
 
 
 views = Blueprint('views', __name__)
@@ -152,6 +153,12 @@ def edit_league():
     league = League.query.get(league_id)
     seasons = Season.query.get(league_id)
 
+    matches = Match.query.filter_by(gameweek=1).all()
+    
+   # db.session.query(Match).delete()
+    #db.session.commit()
+    
+    
     if seasons:
         teams = Team.query.get(seasons.id)
         
@@ -165,7 +172,7 @@ def edit_league():
         names = names[-1]
         
         
-        return render_template("leaguemain.html", images=images, teams=teams, seasons=seasons, user=current_user,league=league)
+        return render_template("leaguemain.html", matches=matches, images=images, teams=teams, seasons=seasons, user=current_user,league=league)
     else:
         return render_template("add-season.html", user=current_user, league=league)
    
@@ -202,4 +209,151 @@ def change():
         return render_template("leaguemain.html", season=season,  seasons=seasons, user=current_user,league=league)
     
         
+
+@views.route("/addresult", methods=["GET", "POST"])
+def add_result():
+    if request.method == "GET":
+        league_id = request.args.get("league_id")
+        season_id = request.args.get("season_id")
+        
+        teams = Team.query.filter_by(season_id=season_id).all()
+        
+        all_players=[]
+        
+        for team in teams:
+            players_per_team = Player.query.filter_by(team_id=team.id).all()
+            
+            team_players = []
+            for player in players_per_team:
+                print(0,player.name)
+                player_dict = {
+                'number': player.number,
+                'name': player.name,
+                'surname': player.surname
+                }
+                team_players.append(player_dict)
+            
+            all_players.append(team_players)
+
+        
+        
+        return render_template("add_result.html", players=all_players, user=current_user, league_id=league_id, season_id=season_id, teams=teams)
+    else:
+        print(request.form)
+        leagueid = request.form.get("league_id")
+        seasonid  = request.form.get("season_id")  
+        
+        team1_id = request.form.get("football-team1")
+        team2_id = request.form.get("football-team2")
+        
+        gameweek = request.form.get("gameweek")
+        
+        
+       
+        
+        team1_goals = request.form.get("team1_goals")
+        team2_goals = request.form.get("team2_goals")
+        
+       
+        team1_scorers = request.form.getlist("team1_scorers")
+        team2_scorers = request.form.getlist("team2_scorers")
+
+        print(team1_scorers)
+        print()
+        print(team2_scorers)
+        
+        
+        match = Match(gameweek=int(gameweek), team_home_id=team1_id, team_away_id=team2_id, season_id=seasonid, scored_home=team1_goals, scored_away=team2_goals)
+        db.session.add(match)
+        db.session.commit()
+        
+        
+        players1 = Player.query.filter_by(team_id=team1_id).all()
+        
+        c = 0
+        for player in players1:
+            print(player.name)
+            print(team1_scorers)
+            if team1_scorers[c]:
+                
+                goal = Goal(amount=team1_scorers[c], scorer_id=player.id, match_id=match.id, team_id=team1_id)
+                db.session.add(goal)
+                db.session.commit()
+            c+=1
+        
+        print()
+        c = 0
+        players2 = Player.query.filter_by(team_id=team2_id).all()
+        for player in players2:
+            print(player.name)
+            if team2_scorers[c]:
+                goal = Goal(amount=team1_scorers[c], scorer_id=player.id, match_id=match.id, team_id=team2_id)
+                db.session.add(goal)
+                db.session.commit()
+            c+=1
+        
+        league = League.query.get(leagueid)
+        seasons = Season.query.get(seasonid)
+        return render_template("leaguemain.html",  seasons=seasons, user=current_user,league=league)
+
     
+    
+    
+    
+@views.route("/removeteam", methods=["POST"])
+def remove_team():
+    team_id = request.form["team_id"]
+    
+    print(192392131,team_id)
+    team = Team.query.get(int(team_id))
+    
+
+    if team:
+            try:
+                db.session.delete(team)
+                players_to_remove = Player.query.filter_by(team_id=team_id).all()
+                for player in players_to_remove:
+                    db.session.delete(player)
+                db.session.commit()
+                print(f"Team with ID {team_id} has been successfully removed.")
+            except Exception as e:
+                db.session.rollback()
+                print(f"Error occurred while removing team with ID {team_id}: {str(e)}")
+    else:
+        print(f"No team found with ID {team_id}")
+  
+    
+    league_id = request.form["league_id"]
+    season_id = request.form["season_id"]
+  
+    league = League.query.get(league_id)
+    seasons = Season.query.get(season_id)
+    
+    
+    return render_template("leaguemain.html", seasons=seasons, user=current_user,league=league)
+
+
+@views.route("/match-main", methods=["POST"])
+def match_main():
+   
+    league_id = request.form["league_id"]
+    season_id = request.form["season_id"]
+    match_id = request.form["match_id"]
+    
+    match = Match.query.get(match_id)
+    seasons = Season.query.get(season_id)
+    league_id = request.form["league_id"]
+    
+    goals_home = Goal.query.filter_by(match_id=match.id, team_id=match.team_home_id).all()
+    goals_away = Goal.query.filter_by(match_id=match.id, team_id=match.team_away_id).all()
+    
+    goals_print = Goal.query.filter_by(match_id=match.id, ).all()
+    print("goals:", goals_print)
+    
+    scorers_home = []
+    scorers_away = []
+   
+    
+    
+    
+    return render_template("match_main.html", match=match, user=current_user, league_id=league_id, season_id=season_id)

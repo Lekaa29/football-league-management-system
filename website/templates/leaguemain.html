@@ -119,6 +119,13 @@ League Main
 
                                         <td class="name"><li class="list-home-item">{{ team.name }}</li></td>
                                         <td class="actions">
+
+                                        <form class="addbutton" action="removeteam" method="post">
+                                            <input type="hidden" name="league_id" value="{{ league.id }}">
+                                            <input type="hidden" name="season_id" value="{{ league.seasons[0].id }}">
+                                            <input type="hidden" name="team_id" value="{{ team.id }}">
+                                            <button type="submit" style="background-color:red;">X</button>
+                                        </form>
                                             
                                             
                                         </td>
@@ -167,13 +174,39 @@ League Main
                 <div class="top">
                     <h2>Fixtures</h2>
                     <form class="addbutton" action="/addresult" method="get">
+                        <input type="hidden" name="league_id" value="{{ league.id }}">
+                        <input type="hidden" name="season_id" value="{{ league.seasons[0].id }}">
                         <button type="submit">Add</button>
                     </form>
                 </div>
                 <p id="line">_________________________</p>
                 <ul>
-                    <li> </li>
-                    <!-- Add more projects as needed -->
+                    <div class="table-wrapper">
+                        <table id="team-table">
+                            <tbody>
+                                {% for match in matches %}
+                                <tr class="clickable-row2" data-leagueid="{{ league.id }}" data-seasonid="{{ league.seasons[0].id }}" data-match="{{ match.id }}">
+                                     
+                                 
+
+
+                                        <td class="name" style="text-align:center;"><li class="list-home-item">{{ match.team_home.name }} {{ match.goal_home }}:{{ match.goals_away }} {{ match.team_away.name }}</li></td>
+                                        <td class="actions">
+
+                                        <form class="addbutton" action="removeteam" method="post">
+                                            <input type="hidden" name="league_id" value="{{ league.id }}">
+                                            <input type="hidden" name="season_id" value="{{ league.seasons[0].id }}">
+                                            <input type="hidden" name="match_id" value="{{ match.id }}">
+                                            <button type="submit" style="background-color:red;">X</button>
+                                        </form>
+                                            
+                                            
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
                 </ul>
             </div>
         </div>
@@ -190,6 +223,20 @@ League Main
                     // Create a form dynamically
                     var form = $('<form action="/team-main" method="POST"></form>');
                     form.append('<input type="hidden" name="team_id" value="' + teamId + '">');
+                    form.append('<input type="hidden" name="league_id" value="' + leagueId + '">');
+                    form.append('<input type="hidden" name="season_id" value="' + seasonId + '">');
+                    form.appendTo('body').submit();
+                });
+
+                $(document).on("click", ".clickable-row2", function() {
+                    // Get the data attributes of the clicked row
+                    var leagueId = $(this).data('leagueid');
+                    var seasonId = $(this).data('seasonid');
+                    var matchId = $(this).data('match');
+        
+                    // Create a form dynamically
+                    var form = $('<form action="/match-main" method="POST"></form>');
+                    form.append('<input type="hidden" name="match_id" value="' + matchId + '">');
                     form.append('<input type="hidden" name="league_id" value="' + leagueId + '">');
                     form.append('<input type="hidden" name="season_id" value="' + seasonId + '">');
                     form.appendTo('body').submit();

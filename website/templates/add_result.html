@@ -1,0 +1,219 @@
+{% extends "layout.html" %}
+{% block title %}
+Add Match
+{% endblock %}
+
+{% block main %}
+<div class="projects">
+    <div class="window">
+        
+            <form action="/addresult" method="POST">
+                <!-- Input fields for Team 1 -->
+
+                <input type="hidden" name="league_id" value="{{ league_id }}">
+                <input type="hidden" name="season_id" value="{{ season_id }}">
+
+                <div class="title" >
+                    
+                    <select class="select-team1" id="football-team1" name="football-team1">
+                        <option value="" disabled selected>Select Team</option>
+                        {% for team in teams %}
+                            <option value="{{ team.id }}">{{ team.name }}</option>
+                        {% endfor %}
+                    </select>
+
+                    
+                    <!-- Input for the colon between team names -->
+                    <div class="result">
+                    <input class="numb-input" type="text" maxlength="2" name="team1_goals" value="0">
+                    <input class="numb-input" type="text" maxlength="2" name="team2_goals" value="0">
+                    </div>
+                    <!-- Input fields for Team 2 -->
+
+                    <select class="select-team2" id="football-team2" name="football-team2">
+                        <option value="" disabled selected>Select Team</option>
+                        {% for team in teams %}
+                            <option value="{{ team.id }}">{{ team.name }}</option>
+                        {% endfor %}
+                    </select>
+
+
+
+                </div>
+        <!-- Table for Team 1 players -->
+
+        <div class="tables">
+            <table class="team-table1">
+                <thead>
+                    <tr>
+                        <th>Number</th>
+                        <th>Name</th>
+                        <th>Goals</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                </tbody>
+            </table>
+
+            <!-- Table for Team 2 players -->
+            <table class="team-table2">
+                <thead>
+                    <tr>
+                        <th>Goals</th>
+                        <th>Name</th>
+                        <th>Number</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Input for gameweek -->
+        <div class="add" style="display:flex; align-items:center; justify-content:flex-end; padding:5px;">
+            <label for="gameweek">Gameweek:</label>
+            <input class="numb-input" style="height:30px; width:60px; font-size:30px;" maxlength="2" value="1" type="text" id="gameweek" name="gameweek">
+
+            <!-- Button to add match -->
+            <button type="submit">Add Match</button>
+        </div>
+    </form>
+
+</div>
+
+<script>
+    var players = {{ players | tojson | safe }};
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var selectTeam1 = document.getElementById('football-team1');
+        var selectTeam2 = document.getElementById('football-team2');
+        
+        var index1; // Declare index variables here so they're accessible outside the event listener
+        var index2; 
+    
+        selectTeam1.addEventListener('change', function() {
+            var selectedIndex1 = selectTeam1.selectedIndex;
+            if (selectedIndex1 === 0) {
+                playerName.textContent = ""; 
+            } else {
+                index1 = selectedIndex1 - 1; // Update the value of index1
+                updateTableContent(index1, '.team-table1', 1);
+            }
+        });
+    
+        selectTeam2.addEventListener('change', function() {
+            var selectedIndex2 = selectTeam2.selectedIndex;
+            if (selectedIndex2 === 0) {
+                playerName.textContent = ""; 
+            } else {
+                index2 = selectedIndex2 - 1; // Update the value of index2
+                updateTableContent(index2, '.team-table2', 2);
+            }
+        });
+    
+        // Function to update the table content based on the new index
+        function updateTableContent(index, tableClass, side) {
+            
+            
+    
+            // Update table content for players based on the new index
+            var tableRows = '';
+            if (side === 1){
+                players[index].forEach(function(player) {
+                    tableRows += '<tr>' +
+                                    '<td style="text-align:center;">' + player.number + '</td>' +
+                                    '<td style="text-align:center;">' + player.name + ' ' + player.surname + '</td>' +
+                                    '<td style="text-align:center;"><input class="numb-input" style="height:30px;  width:40px; font-size:18px;" maxlength="2" value="" type="text" name="team1_scorers"></td>' +
+                                '</tr>';
+                });
+            }
+            else{
+                players[index].forEach(function(player) {
+                    tableRows += '<tr>' +
+                                    '<td style="text-align:center;"><input class="numb-input" style="height:30px;  width:40px; font-size:18px;" maxlength="2" value="" type="text" name="team2_scorers"></td>' +
+                                    '<td style="text-align:center;">' + player.name + ' ' + player.surname + '</td>' +
+                                    '<td style="text-align:center;">' + player.number + '</td>' +
+                                '</tr>';
+                });
+            }
+            // Update the table body with the new content
+            var tableBody = document.querySelector(tableClass + ' tbody');
+            tableBody.innerHTML = tableRows;
+        }
+    });
+    
+</script>
+
+<style>
+    .title{
+        display:flex;
+        justify-content:space-evenly;
+        align-items: center;
+
+
+       
+    }
+
+    .window{
+        max-width: 1000px;
+    }
+
+    .numb-input{
+        width:90px;
+        height: 90px;
+        padding: 5px;
+
+        font-size: 60px;
+        text-align: center;
+
+    }
+
+    .team-input{
+        padding: 10px;
+        width:200px;
+        height: 50px;
+        padding: 5px;
+
+        font-size: 60px;
+        text-align: center;
+    }
+
+    .tables{
+        display:flex;
+        justify-content:space-evenly;
+        align-items: space-evenly;
+    }
+    
+    /* Style the select dropdown */
+    select {
+        width: 250px;
+        height: 50px;
+        text-align:center;
+        font-size: 25px;
+
+
+        appearance: none; /* Remove default styling */
+        -webkit-appearance: none; /* Remove default styling for Safari */
+        -moz-appearance: none; /* Remove default styling for Firefox */
+        background-color: transparent; /* Transparent background */
+        border: none; /* Remove border */
+        padding: 5px; /* Add padding for better appearance */
+    /* Adjust font size */
+        cursor: pointer; /* Show pointer cursor */
+    }
+
+    /* Style the select options */
+    select option {
+        background-color: #f8f8f8; /* Background color for options */
+    }
+
+    /* Style hover effect */
+    select:hover {
+        background-color: #e0e0e0; /* Change background color on hover */
+    }
+
+</style>
+
+{% endblock %}

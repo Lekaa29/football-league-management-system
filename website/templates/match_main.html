@@ -1,0 +1,154 @@
+{% extends "layout.html" %}
+{% block title %}
+Add Match
+{% endblock %}
+
+{% block main %}
+<div class="projects">
+    <div class="window">
+        
+        
+            <div style="display:flex; justify-content:space-evenly; align-items: center;">
+                <div style="display:flex; justify-content:center; align-items: center; box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);"> 
+                    <div class="square1" style="background-color:{{match.team_home.home_kit_first}}"></div>
+                    <div class="square2" style="background-color:{{match.team_home.home_kit_second}}"></div>
+                    <div class="square3" style="background-color:{{match.team_home.home_kit_first}}"></div>
+                </div>
+
+                <div></div>
+
+                <div style="display:flex; justify-content:center; align-items: center;center; box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);"> 
+                    <div class="square3" style="background-color:{{match.team_away.away_kit_first}}"></div>
+                    <div class="square2" style="background-color:{{match.team_away.away_kit_second}}"></div>
+                    <div class="square1" style="background-color:{{match.team_away.away_kit_first}}"></div>
+                </div>   
+
+            </div>
+        
+
+
+        <div style="display:flex; justify-content:space-between; align-items: center;">
+            <h2 style="flex: 1; text-align: center;">{{ match.team_home.name }}</h2>
+            <h1 style="width: 60px; text-align: center; font-weight: bold;">{{ match.scored_home }}:{{ match.scored_away }}</h1>
+            <h2 style="flex: 1; text-align: center;">{{ match.team_away.name  }}</h2>
+        </div>
+
+        <div class="tables">
+            <table class="team-table1">
+                <thead>
+                </thead>
+                <tbody>
+                    {% for player in players1 %}
+                    <tr>
+                        <td>{{ player[1].name }} {{ player[1].surname }}</td>
+                        <td>{{ "0"*player[0] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <!-- Table for Team 2 players -->
+            <table class="team-table2">
+                <thead>
+                </thead>
+                <tbody>
+                    {% for player in players2 %}
+                    <tr>
+                        <td>{{ "0"*player[0] }}</td>
+                        <td>{{ player[1].name }} {{ player[1].surname }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+  
+</div>
+
+
+<style>
+
+    .square1{
+        width: 50px; 
+        height: 30px;
+    }
+    .square2{
+        width: 30px;
+        height: 30px;
+    }
+    .square3{
+        width: 320px; 
+        height: 30px;
+    }
+
+
+    .title{
+        display:flex;
+        justify-content:space-evenly;
+        align-items: center;
+
+
+       
+    }
+
+    .window{
+        max-width: 1000px;
+    }
+
+    .numb-input{
+        width:90px;
+        height: 90px;
+        padding: 5px;
+
+        font-size: 60px;
+        text-align: center;
+
+    }
+
+    .team-input{
+        padding: 10px;
+        width:200px;
+        height: 50px;
+        padding: 5px;
+
+        font-size: 60px;
+        text-align: center;
+    }
+
+    .tables{
+        display:flex;
+        justify-content:space-evenly;
+        align-items: space-evenly;
+    }
+    
+    /* Style the select dropdown */
+    select {
+        width: 250px;
+        height: 50px;
+        text-align:center;
+        font-size: 25px;
+
+
+        appearance: none; /* Remove default styling */
+        -webkit-appearance: none; /* Remove default styling for Safari */
+        -moz-appearance: none; /* Remove default styling for Firefox */
+        background-color: transparent; /* Transparent background */
+        border: none; /* Remove border */
+        padding: 5px; /* Add padding for better appearance */
+    /* Adjust font size */
+        cursor: pointer; /* Show pointer cursor */
+    }
+
+    /* Style the select options */
+    select option {
+        background-color: #f8f8f8; /* Background color for options */
+    }
+
+    /* Style hover effect */
+    select:hover {
+        background-color: #e0e0e0; /* Change background color on hover */
+    }
+
+</style>
+
+{% endblock %}

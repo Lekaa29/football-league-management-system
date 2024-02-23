@@ -48,3 +48,28 @@ class Player(db.Model):
     number = db.Column(db.Integer)
     image = db.Column(db.LargeBinary, default=lambda: b'<default_image_bytes>')
     team_id = db.Column(db.Integer, db.ForeignKey("team.id"))
+
+
+class Goal(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    amount = db.Column(db.Integer)
+    scorer_id = db.Column(db.Integer, db.ForeignKey("player.id"))
+    match_id = db.Column(db.Integer, db.ForeignKey("match.id"))
+    team_id = db.Column(db.Integer, db.ForeignKey("team.id"))
+    scorer = db.relationship("Player")
+
+class Match(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    gameweek = db.Column(db.Integer)
+    team_home_id = db.Column(db.Integer, db.ForeignKey("team.id"))
+    team_away_id = db.Column(db.Integer, db.ForeignKey("team.id"))
+    
+    scored_home = db.Column(db.Integer, db.ForeignKey("team.id"))
+    scored_away = db.Column(db.Integer, db.ForeignKey("team.id"))
+    
+    goal_home = db.relationship('Goal', foreign_keys='Goal.match_id', cascade='all,delete', backref='home_match')
+    goals_away = db.relationship('Goal', foreign_keys='Goal.match_id', cascade='all,delete', backref='away_match')
+    season_id = db.Column(db.Integer, db.ForeignKey("season.id"))
+    team_home = db.relationship("Team", foreign_keys=[team_home_id])
+    team_away = db.relationship("Team", foreign_keys=[team_away_id])
+    
