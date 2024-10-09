@@ -87,10 +87,67 @@ League Main
     #team-table tbody tr:hover {
         background-color: #f5f5f5; /* Change hover background color for table body rows */
     }
+
+    .graph-container {
+        width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        border: 1px solid #ccc;
+    }
+    .graph {
+        width: 100%;
+        height: 200px;
+        border: 1px solid #ccc;
+        position: relative;
+        overflow: hidden;
+    }
+    .gameweek {
+        position: absolute;
+        bottom: 0;
+        width: 50px; /* Adjust as needed */
+        text-align: center;
+        transform: translateX(-50%);
+    }
+    .position-line {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: auto;
+        transform: translateY(-50%);
+        border-top: 2px solid blue; /* Adjust line color */
+        z-index: -1;
+    }
+    .position-marker {
+        position: absolute;
+        width: 10px; /* Adjust as needed */
+        height: 10px; /* Adjust as needed */
+        background-color: blue; /* Adjust marker color */
+        border-radius: 50%;
+        bottom: 0;
+        transform: translateX(-50%) translateY(-50%);
+    }
+
+    .sports-table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+    
+    .sports-table th, .sports-table td {
+        border-top: 1px solid #cccccc; /* Gray border for horizontal lines */
+        text-align: left;
+        padding: 2px;
+    }
+    
+    .sports-table th {
+        background-color: #f2f2f2;
+        text-align: left; /* Left align # and Team */
+    }
+    
 </style>
 </head>
 <body>
-        <div class="projects title">
+        <div class="projects title" style="justify-content:left; margin-left:80px;">
             <div class="top">
                 <h1 style="margin: 0;">{{ team.name }} </h1>
 
@@ -110,6 +167,8 @@ League Main
 
                         <input type="hidden" name="league_id" value="{{ leagueid }}">
                         <input type="hidden" name="season_id" value="{{ seasonid}}">
+                        <input type="hidden" name="team_id" value="{{ team.id }}">
+
 
                         <button type="submit">Add</button>
                     </form>
@@ -157,17 +216,12 @@ League Main
     
             <div class="project-container">
                 <div class="top">
-                    <h2>Table</h2>
-                    <form class="addbutton" action="/view-league-table" method="get">
-                        <button type="submit">View</button>
-                    </form>
+                    <h2>Form</h2>
+
                 </div>
 
                 <p id="line">_________________________</p>
-                <ul>
-                    <li> </li>
-                    <!-- Add more projects as needed -->
-                </ul>
+                <canvas id="myChart" width="400" height="300"></canvas>
             </div>
         </div>
 
@@ -180,31 +234,79 @@ League Main
                     </form>
                 </div>
                 <p id="line">_________________________</p>
-                <ul>
-                    <li> </li>
-                    
-                    <!-- Add more projects as needed -->
-                </ul>
+                <table class="sports-table">
+                    <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Goals</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                        {% for player in players_stats %}
+
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td>{{ player.player_name }}</td>
+                            <td>{{ player.goals_scored }}</td>
+                     
+                        </tr>
+                        {% endfor %}
+                      <!-- Add more rows for other teams -->
+                    </tbody>
+                  </table>
             </div>
     
             <div class="project-container">
                 <div class="top">
                     <h2>Fixtures</h2>
-                    <form class="addbutton" action="/addresult" method="get">
-                        <button type="submit">Add</button>
-                    </form>
+                    
                 </div>
                 <p id="line">_________________________</p>
-                <ul>
-                    <li> </li>
+                <table id="team-table">
+                    <tbody>
+                    {% for gw in gw_results %}
+
+                    
+                    <tr class="clickable-row2" data-leagueid="{{ leagueid }}" data-seasonid="{{ seasonid }}" data-match="{{ gw[2].id }}">
+                        <td>
+                        <a style="text-align:left">GW{{ gw[0] }}   </a>
+
+                        {% if gw[1] == 1 %} <a style="color:green;">W</a> {% endif %}
+                        {% if gw[1] == 0 %} <a style="color:gray;">D</a> {% endif %}
+                        {% if gw[1] == -1 %} <a style="color:red;">L</a> {% endif %}
+
+                        
+                        {% if gw[2].team_home_id == gw[3] %}
+                        <a>{{ gw[2].team_home.name }} {{ gw[2].scored_home }}</a>
+                        <a>- {{ gw[2].scored_away }}</a>
+                        <a style="color:gray;">{{ gw[2].team_away.name }}</a>
+                        
+                        {% else %}
+                        <a style="color:gray;">{{ gw[2].team_home.name }}</a>
+                        <a>{{ gw[2].scored_home }} -</a>
+                        <a> {{ gw[2].scored_away }} {{ gw[2].team_away.name }}</a>
+                        {% endif %}
+
+                        </td>
+
+                    </tr>
+                    </li>
+
+                        
+                    {% endfor %}
                     <!-- Add more projects as needed -->
-                </ul>
+                </tbody>
+            </table>
             </div>
         </div>
 
 
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Add this line to import Chart.js -->
+
         <script>
+
             $(document).ready(function() {
                 $(document).on("click", ".clickable-row", function() {
                     // Get the data attributes of the clicked row
@@ -222,6 +324,85 @@ League Main
                     form.appendTo('body').submit();
                 });
             });
+            
+            $(document).ready(function() {
+                $(document).on("click", ".clickable-row2", function() {
+                    // Get the data attributes of the clicked row
+                    var leagueId = $(this).data('leagueid');
+                    var seasonId = $(this).data('seasonid');
+                    var teamId = $(this).data('teamid');
+        
+                    // Create a form dynamically
+                    var form = $('<form action="/team-main" method="POST"></form>');
+                    form.append('<input type="hidden" name="team_id" value="' + teamId + '">');
+                    form.append('<input type="hidden" name="league_id" value="' + leagueId + '">');
+                    form.append('<input type="hidden" name="season_id" value="' + seasonId + '">');
+                    form.appendTo('body').submit();
+                });
+
+
+                $(document).on("click", ".clickable-row2", function() {
+                    // Get the data attributes of the clicked row
+                    var leagueId = $(this).data('leagueid');
+                    var seasonId = $(this).data('seasonid');
+                    var matchId = $(this).data('match');
+        
+                    // Create a form dynamically
+                    var form = $('<form action="/match-main" method="POST"></form>');
+                    form.append('<input type="hidden" name="match_id" value="' + matchId + '">');
+                    form.append('<input type="hidden" name="league_id" value="' + leagueId + '">');
+                    form.append('<input type="hidden" name="season_id" value="' + seasonId + '">');
+                    form.appendTo('body').submit();
+                });
+            });
+
+
+            document.addEventListener('DOMContentLoaded', function() {
+                var ctx = document.getElementById('myChart').getContext('2d');
+                var chartData = {{ chart_data|tojson }};
+                var labels = Array.from({length: chartData.length}, (_, i) => 'Gameweek ' + (i + 1)); // Create labels like 'Gameweek 1', 'Gameweek 2', etc.
+                
+                var maxY = {{ teams_count }}; // Set the maximum y-axis value
+            
+                console.log('maxY:', maxY);
+                console.log('chartData:', chartData);
+                
+                var myChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: '',
+                            data: chartData,
+                            borderColor: '#00008B',
+                            tension: 0.1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                min: 1, // Set the minimum y-axis value
+                                max: maxY,
+                                reverse: true,
+                                ticks: {
+                                    stepSize: 1, // Set the step size for y-axis ticks to 1
+                                    precision: 0 // Ensure whole number increments
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false // Hide the legend
+                            }
+                        }
+                    }
+                });
+            });
+            
+            
+            
+            
+            
         </script>
     </body>
 {% endblock %}

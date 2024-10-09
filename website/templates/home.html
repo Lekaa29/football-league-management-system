@@ -21,7 +21,7 @@ Home
                     <div class="project-container">
                         <div class="top">
                             <li class="list-home-item">{{ league.name }}</li>
-                            <form class="addbutton edit-league-form" action="/league-main" method="post" class="edit-league-form">
+                            <form class="addbutton edit-league-form" action="/league-main" method="get" class="edit-league-form">
                                 <input type="hidden" name="leagueid" value="{{ league.id }}">
                                 <button type="button" onclick="leaguemain({{ league.id }}, this)">Edit</button>
                             </form>

@@ -16,6 +16,20 @@ League Main
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     
 <style>
+    .gameweek-selector {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .gameweek-table {
+        display: none;
+    }
+    
+    .gameweek-table.active {
+        display: block;
+    }
+
     #team-table {
         /* Customize overall table width and layout if needed */
         width: 100%;
@@ -59,20 +73,133 @@ League Main
         overflow-y: auto; /* Add vertical scrollbar when content overflows */
         overflow-x: hidden; /* Hide horizontal scrollbar if present */
     }
+
+    .sports-table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+    
+    .sports-table th, .sports-table td {
+        border-top: 1px solid #cccccc; /* Gray border for horizontal lines */
+        text-align: left;
+        padding: 2px;
+    }
+    
+    .sports-table th {
+        background-color: #f2f2f2;
+        text-align: left; /* Left align # and Team */
+    }
+    
+    .sports-table th:first-child,
+    .sports-table td:first-child {
+        text-align: left; /* Left align # and Team */
+    }
+    
+    .sports-table th:nth-child(n+3),
+    .sports-table td:nth-child(n+3) {
+        text-align: right; /* Right align P, DIFF, PTS */
+    }
+    
+    .sports-table tbody tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+    
+    .sports-table tbody tr:last-child td {
+        border-bottom: 1px solid #cccccc; /* Gray border for last row */
+    }
+    
+
+        /* Modal styles */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000; /* Ensure modal appears above other content */
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0,0,0,0.5); /* Semi-transparent black background */
+    }
+
+    .modal-content {
+        background-color: #ffffff; /* White background for modal content */
+        margin: 20% auto; /* Center modal vertically and horizontally */
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+    }
+
+    .close {
+        color: #aaaaaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+    .close:hover,
+    .close:focus {
+        color: #000;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .sports-modal-table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+    
+    .sports-modal-table th,
+    .sports-modal-table td {
+        border-top: 1px solid #cccccc; /* Gray border for horizontal lines */
+        padding: 8px;
+        text-align: left;
+    }
+    
+    .sports-modal-table th {
+        background-color: #f2f2f2;
+    }
+    
+    .sports-modal-table th:first-child,
+    .sports-modal-table td:first-child {
+        text-align: left; /* Left align # and Team */
+    }
+    
+    .sports-modal-table th:nth-child(n+3),
+    .sports-modal-table td:nth-child(n+3) {
+        text-align: center; /* Center align P, W, D, L, Goals */
+    }
+    
+    .sports-modal-table tbody tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+    
+    .sports-modal-table tbody tr:last-child td {
+        border-bottom: 1px solid #cccccc; /* Gray border for last row */
+    }
+    
+
+    
 </style>
 </head>
 <body>
-        <div class="projects title">
+        <div class="projects title" style="justify-content:left; margin-left:80px;">
             <div class="top">
                 <h1 style="margin: 0;">{{ league.name }} </h1>
                 
 
-                <form action="/change-season" method="POST">
-                    <input type="hidden" name="league_id" value="{{ league_id }}">
-                    <select type="submit" id="season" name="season">
+                <form id="seasonForm" action="/league-main" method="GET">
+                    <input type="hidden" id="league_id" name="league_id" value="{{ league_id }}">
+                    <input type="hidden" id="season_id" name="season_id" value="">
+                    <input type="hidden" id="season_index" name="season_index" value="">
+                    <select id="seasonSelect" name="season" onchange="submitForm()">
                         {% for season in league.seasons %}
-                      <option value="{{ season.id }}">{{ season.name }}</option>
-                      {% endfor %}
+                            {% if loop.index == season_selected_index %}
+                                <option value="{{ season.id }}" data-index="{{ loop.index }}" selected>{{ season.name }}</option>
+                            {% else %}
+                                <option value="{{ season.id }}" data-index="{{ loop.index }}">{{ season.name }}</option>
+                            {% endif %}
+                        {% endfor %}
                     </select>
                 </form>
 
@@ -108,7 +235,7 @@ League Main
                     <div class="table-wrapper">
                         <table id="team-table">
                             <tbody>
-                                {% for team in seasons.teams %}
+                                {% for team in season.teams %}
                                 <tr class="clickable-row" data-leagueid="{{ league.id }}" data-seasonid="{{ league.seasons[0].id }}" data-teamid="{{ team.id }}">
                                         {% if team.logo %}
                                         {% else %}
@@ -141,16 +268,88 @@ League Main
             <div class="project-container">
                 <div class="top">
                     <h2>Table</h2>
-                    <form class="addbutton" action="/view-league-table" method="get">
-                        <button type="submit">View</button>
-                    </form>
+                    <div class="addbutton">
+                    <button class="addbutton" id="viewButton" type="button">View</button>
+                    </div>
+                </div>
+                
+                <div id="modal" class="modal">
+                    <div class="modal-content">
+                        <span class="close">&times;</span>
+                        <!-- Table content goes here -->
+                        <table class="sports-modal-table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Team</th>
+                                    <th>P</th>
+                                    <th>W</th>
+                                    <th>D</th>
+                                    <th>L</th>
+                                    <th>Goals</th>
+                                    <th>PTS</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for team in teams_stats %}
+                                <tr>
+                                    <td>{{ loop.index }}</td>
+                                    <td>{{ team.team_name }}</td>
+                                    <td>{{ team.wins+team.draws+team.losses }}</td>
+                                    <td>{{ team.wins }}</td>
+                                    <td>{{ team.draws }}</td>
+                                    <td>{{ team.losses }}</td>
+                                    <td style="display:flex;  justify-content: center;">
+                                        <div>{{ team.goals_scored }}</div>:
+                                        <div>{{ team.goals_conceded }}</div>
+                                    </td>
+                                    <td>{{ team.wins*3+team.draws*1 }}</td>   
+                                </tr>
+                                {% endfor %}
+                                <!-- Add more rows for other teams -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
 
+
                 <p id="line">_________________________</p>
-                <ul>
-                    <li> </li>
-                    <!-- Add more projects as needed -->
-                </ul>
+                <table class="sports-table">
+                    <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>Team</th>
+                        <th>P</th>
+                        <th>DIFF</th>
+                        <th>PTS</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                        {% for team in teams_stats %}
+
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td>{{ team.team_name }}</td>
+
+                            
+                            <td>{{ team.wins+team.draws+team.losses }}</td>
+
+                            {% if team.goals_scored-team.goals_conceded > 0%}
+                            <td>+{{ team.goals_scored-team.goals_conceded}}</td>
+                            {% else %}
+                            <td>{{ team.goals_scored-team.goals_conceded}}</td>
+                            {% endif %}
+
+
+
+                            <td>{{ team.wins*3+team.draws*1 }}</td>
+
+                     
+                        </tr>
+                        {% endfor %}
+                      <!-- Add more rows for other teams -->
+                    </tbody>
+                  </table>
             </div>
         </div>
 
@@ -158,16 +357,30 @@ League Main
             <div class="project-container">
                 <div class="top">
                     <h2>Goalscorers</h2>
-                    <form class="addbutton" action="/view-league-goalscorers" method="get">
-                        <button type="submit">View</button>
-                    </form>
+
                 </div>
                 <p id="line">_________________________</p>
-                <ul>
-                    <li> </li>
-                    
-                    <!-- Add more projects as needed -->
-                </ul>
+                <table class="sports-table">
+                    <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Goals</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                        {% for player in players_stats %}
+
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td>{{ player.player_name }}</td>
+                            <td>{{ player.goals_scored }}</td>
+                     
+                        </tr>
+                        {% endfor %}
+                      <!-- Add more rows for other teams -->
+                    </tbody>
+                  </table>
             </div>
     
             <div class="project-container">
@@ -182,30 +395,45 @@ League Main
                 <p id="line">_________________________</p>
                 <ul>
                     <div class="table-wrapper">
-                        <table id="team-table">
-                            <tbody>
-                                {% for match in matches %}
-                                <tr class="clickable-row2" data-leagueid="{{ league.id }}" data-seasonid="{{ league.seasons[0].id }}" data-match="{{ match.id }}">
-                                     
-                                 
 
+                        <div class="gameweek-selector">
+                            <button id="prevBtn">Previous</button>
 
-                                        <td class="name" style="text-align:center;"><li class="list-home-item">{{ match.team_home.name }} {{ match.goal_home }}:{{ match.goals_away }} {{ match.team_away.name }}</li></td>
-                                        <td class="actions">
-
-                                        <form class="addbutton" action="removeteam" method="post">
-                                            <input type="hidden" name="league_id" value="{{ league.id }}">
-                                            <input type="hidden" name="season_id" value="{{ league.seasons[0].id }}">
-                                            <input type="hidden" name="match_id" value="{{ match.id }}">
-                                            <button type="submit" style="background-color:red;">X</button>
-                                        </form>
-                                            
-                                            
-                                        </td>
-                                    </tr>
+                            <select  id="select_gameweek" name="select_gameweek">
+                                {% for n in range(1, gameweeks|length + 1) %}
+                                <option value="Gameweek{{ n }}">Gameweek {{ n }}</option>
                                 {% endfor %}
-                            </tbody>
-                        </table>
+                            </select>
+
+
+                            <button id="nextBtn">Next</button>
+                        </div>
+                        
+                        <div class="gameweek-tables">
+                            <!-- Your tables for each gameweek -->
+
+                            {% for gameweek in gameweeks %}
+
+
+                            <div id="gameweek{{loop.index}}" class="gameweek-table active">
+                                <!-- Table for Gameweek 1 -->
+                                <table id="team-table">
+                                    <tbody>
+                                        {% for match in gameweek %}
+                                        <tr class="clickable-row2" data-leagueid="{{ league.id }}" data-seasonid="{{ league.seasons[0].id }}" data-match="{{ match.id }}">
+                                                <td class="name" style="text-align:center;"><li class="list-home-item">{{ match.team_home.name }} {{ match.scored_home }}:{{ match.scored_away }} {{ match.team_away.name }}</li></td>
+                                                <td class="actions">
+                                                 
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            {% endfor %}
+                            <!-- Add more tables for each gameweek as needed -->
+                        </div>
+                        
                     </div>
                 </ul>
             </div>
@@ -213,6 +441,63 @@ League Main
 
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script>
+            function submitForm() {
+                var selectedSeasonId = document.getElementById("seasonSelect").value;
+                var selectedIndex = document.getElementById("seasonSelect").options[document.getElementById("seasonSelect").selectedIndex].getAttribute('data-index');
+                document.getElementById("season_id").value = selectedSeasonId;
+                document.getElementById("season_index").value = selectedIndex;
+                document.getElementById("seasonForm").submit();
+            }
+
+            document.addEventListener("DOMContentLoaded", function() {
+                var currentGameweek = 1;
+                var prevBtn = document.getElementById("prevBtn");
+                var nextBtn = document.getElementById("nextBtn");
+                var selectGameweek = document.getElementById("select_gameweek");
+                var maxGameweeks = {{ gameweeks|length }};
+
+                // Function to update the gameweek selector and tables
+                function updateGameweek(gameweek) {
+                    selectGameweek.value = "Gameweek" + gameweek;
+                    selectGameweek.dispatchEvent(new Event('change'));
+                }
+        
+                prevBtn.addEventListener("click", function() {
+                    if (currentGameweek > 1) {
+                        currentGameweek--;
+                        updateGameweek(currentGameweek);
+                    }
+                });
+        
+                nextBtn.addEventListener("click", function() {
+                    if (currentGameweek < maxGameweeks) { // Assuming 5 is the maximum number of gameweeks
+                        currentGameweek++;
+                        updateGameweek(currentGameweek);
+                    }
+                });
+        
+                // Event listener for the select element
+                selectGameweek.addEventListener("change", function() {
+                    var selectedGameweek = parseInt(this.value.replace("Gameweek", ""));
+                    if (!isNaN(selectedGameweek)) {
+                        // Hide all gameweek tables
+                        var gameweekTables = document.querySelectorAll(".gameweek-table");
+                        gameweekTables.forEach(function(table) {
+                            table.classList.remove("active");
+                        });
+        
+                        // Show the table for the selected gameweek
+                        var selectedTable = document.getElementById("gameweek" + selectedGameweek);
+                        selectedTable.classList.add("active");
+                    }
+                });
+        
+                // Initial update to set the default gameweek
+                updateGameweek(currentGameweek);
+            });
+
+
+
             $(document).ready(function() {
                 $(document).on("click", ".clickable-row", function() {
                     // Get the data attributes of the clicked row
@@ -221,7 +506,7 @@ League Main
                     var teamId = $(this).data('teamid');
         
                     // Create a form dynamically
-                    var form = $('<form action="/team-main" method="POST"></form>');
+                    var form = $('<form action="/team-main" method="GET"></form>');
                     form.append('<input type="hidden" name="team_id" value="' + teamId + '">');
                     form.append('<input type="hidden" name="league_id" value="' + leagueId + '">');
                     form.append('<input type="hidden" name="season_id" value="' + seasonId + '">');
@@ -242,6 +527,29 @@ League Main
                     form.appendTo('body').submit();
                 });
             });
+
+
+            document.getElementById('viewButton').addEventListener('click', function() {
+                var modal = document.getElementById('modal');
+                var span = document.getElementsByClassName('close')[0];
+                modal.style.display = 'block';
+            
+                // Add event listener for close button
+                span.onclick = function() {
+                    modal.style.display = 'none';
+                }
+            
+                // Close modal when user clicks outside of it
+                window.onclick = function(event) {
+                    if (event.target == modal) {
+                        modal.style.display = 'none';
+                    }
+                }
+            });
+
+         
+       
+            
         </script>
 
     </body>

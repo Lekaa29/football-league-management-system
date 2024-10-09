@@ -1,6 +1,7 @@
 from flask_login import UserMixin
 from sqlalchemy.sql import func
 from . import db 
+from sqlalchemy import ForeignKeyConstraint
 
 
 class User(db.Model, UserMixin):
@@ -63,13 +64,13 @@ class Match(db.Model):
     gameweek = db.Column(db.Integer)
     team_home_id = db.Column(db.Integer, db.ForeignKey("team.id"))
     team_away_id = db.Column(db.Integer, db.ForeignKey("team.id"))
+    season_id = db.Column(db.Integer, db.ForeignKey("season.id"))
     
     scored_home = db.Column(db.Integer, db.ForeignKey("team.id"))
     scored_away = db.Column(db.Integer, db.ForeignKey("team.id"))
     
-    goal_home = db.relationship('Goal', foreign_keys='Goal.match_id', cascade='all,delete', backref='home_match')
-    goals_away = db.relationship('Goal', foreign_keys='Goal.match_id', cascade='all,delete', backref='away_match')
-    season_id = db.Column(db.Integer, db.ForeignKey("season.id"))
+    goal_home = db.relationship('Goal', foreign_keys="[Goal.match_id, Goal.team_id]", cascade='all,delete', backref='home_match')
+    goal_away = db.relationship('Goal', foreign_keys="[Goal.match_id, Goal.team_id]", cascade='all,delete', backref='away_match')
+    
     team_home = db.relationship("Team", foreign_keys=[team_home_id])
     team_away = db.relationship("Team", foreign_keys=[team_away_id])
-    

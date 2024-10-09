@@ -93,33 +93,90 @@ Player Main
         widht: 90px;
         max-width: 80%;
     }
+
+
 </style>
 </head>
 <body>
        
 
-        <div class="projects">
+        <div class="projects" >
 
-            <div class="project-container">
+            <div class="project-container" style=" height: 80%; max-height: 2000px;">
                 <div class="top">
                     <div class="top">
-                    <h2>Logo  </h2>
-                    <h2>{{ player.name }}  {{ player.surname}} {{player.number}}</h2>
+                    <h2>{{ player.name }}  {{ player.surname}}  </h2>
+
+                    <h1 style="margin-left:30px; font-family: 'Trebuchet MS', sans-serif; font-weight: bold;">{{ player.number }}</h1>
+
                     </div>
                     <form class="addbutton" action="/editplayer" method="get">
                         <button type="submit">Edit</button>
                     </form>
                 </div>
                 <div class="top">
-                    <h2>Club:  LOGO</h2>
                     <h2></h2>
                     <h2></h2>
+
+                    
+
+
                 </div>
                 <p id="line">_________________________</p>
-                <ul>
+                <ul style="display: flex; flex-direction: column; list-style-type: none; padding: 0;">
                     <li>Stats</li>
-                    <li>Games</li>
-                    <!-- Add more projects as needed -->
+                    <li>Games: {{ games_count }}</li>
+                    <li>Goals: {{ goals_count }}</li>
+                </ul>
+                <p id="line">_________________________</p>
+                <ul style="display: flex; flex-direction: column; list-style-type: none; padding: 0;">
+                    <li>Fixtures</li>
+                    <table id="team-table">
+                        <tbody>
+                        {% for gw in gw_results %}
+    
+                        
+                        <tr class="clickable-row2" data-leagueid="{{ leagueid }}" data-seasonid="{{ seasonid }}" data-match="{{ gw[2].id }}">
+                            <td>
+                            <a style="text-align:left">GW{{ gw[0] }}   </a>
+    
+                            
+    
+                            
+                            {% if gw[1].team_home_id == gw[2] %}
+
+                                {% if gw[3] != 0 %}
+                                <a>{{ gw[3] }}x&#9917;</a>
+                                {% endif %}
+
+                            <a>{{ gw[1].team_home.name }} {{ gw[1].scored_home }}</a>
+                            <a>- {{ gw[1].scored_away }}</a>
+                            <a style="color:gray;">{{ gw[1].team_away.name }}</a>
+                            
+                            {% else %}
+                            <a style="color:gray;">{{ gw[1].team_home.name }}</a>
+                            <a>{{ gw[1].scored_home }} -</a>
+                            <a> {{ gw[1].scored_away }} {{ gw[1].team_away.name }}</a>
+
+
+                                {% if gw[3] != 0 %}
+                                <a>&#9917;x{{ gw[3] }}</a>
+                                {% endif %}
+
+                            {% endif %}
+    
+                            </td>
+    
+                        </tr>
+                        </li>
+    
+                            
+                        {% endfor %}
+                        <!-- Add more projects as needed -->
+                    </tbody>
+                </table>
+
+                    
                 </ul>
             </div>
         </div>
@@ -129,3 +186,19 @@ Player Main
     </body>
 {% endblock %}
  
+<script>
+    $(document).ready(function() {
+        $(document).on("click", ".clickable-row2", function() {
+            // Get the data attributes of the clicked row
+            var leagueId = $(this).data('leagueid');
+            var seasonId = $(this).data('seasonid');
+            var teamId = $(this).data('teamid');
+
+            // Create a form dynamically
+            var form = $('<form action="/team-main" method="POST"></form>');
+            form.append('<input type="hidden" name="team_id" value="' + teamId + '">');
+            form.append('<input type="hidden" name="league_id" value="' + leagueId + '">');
+            form.append('<input type="hidden" name="season_id" value="' + seasonId + '">');
+            form.appendTo('body').submit();
+        });
+</script>

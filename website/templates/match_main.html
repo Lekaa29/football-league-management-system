@@ -5,57 +5,65 @@ Add Match
 
 {% block main %}
 <div class="projects">
-    <div class="window">
+    <div class="window" style="padding:0px;">
         
-        
-            <div style="display:flex; justify-content:space-evenly; align-items: center;">
-                <div style="display:flex; justify-content:center; align-items: center; box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);"> 
-                    <div class="square1" style="background-color:{{match.team_home.home_kit_first}}"></div>
-                    <div class="square2" style="background-color:{{match.team_home.home_kit_second}}"></div>
-                    <div class="square3" style="background-color:{{match.team_home.home_kit_first}}"></div>
+        <div style="position: relative;">
+            <div style="padding:0px;top: 0;display: flex; justify-content: space-evenly; align-items: center;">
+                <div style="flex: 1; display: flex; justify-content: center; align-items: center;"> 
+                    <div class="square1" style="opacity: 0.8; width: 100%; height: 150px;background: linear-gradient(to top left, white 0%, white 77%, {{match.team_home.home_kit_first}} 80%, {{match.team_home.home_kit_second}} 100%);">
+
+                    </div>
                 </div>
 
                 <div></div>
 
-                <div style="display:flex; justify-content:center; align-items: center;center; box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);"> 
-                    <div class="square3" style="background-color:{{match.team_away.away_kit_first}}"></div>
-                    <div class="square2" style="background-color:{{match.team_away.away_kit_second}}"></div>
-                    <div class="square1" style="background-color:{{match.team_away.away_kit_first}}"></div>
-                </div>   
-
+                <div style="flex: 1; display: flex; justify-content: center; align-items: center;"> 
+                    <div class="square3" style="opacity: 0.8; width: 100%; height: 150px; background: linear-gradient(to top right, white 0%, white 77%, {{match.team_away.away_kit_first  }} 80%, {{match.team_away.away_kit_second}} 100%);">
+                        
+                    </div>
+                </div>
             </div>
-        
+            <div style="position: absolute; height:100%;top: 0; left: 0; right: 0; display: flex; justify-content: space-evenly; align-items: center; padding: 10px;">
+                <h2 style="flex: 1; text-align: center;">{{ match.team_home.name }}</h2>
+
+                <div style="display:flex; justify-content: center; align-items: center;">
+                    <h1 style="width: 60px; text-align: center; font-weight: bold;">{{ match.scored_home }}</h1>
+                    <h1 style="width: 20px; text-align: center; font-weight: bold;">-</h1>
+                    <h1 style="width: 60px; text-align: center; font-weight: bold;">{{ match.scored_away }}</h1>
+                </div>
+
+                <h2 style="flex: 1; text-align: center;">{{ match.team_away.name }}</h2>
+            </div>
 
 
-        <div style="display:flex; justify-content:space-between; align-items: center;">
-            <h2 style="flex: 1; text-align: center;">{{ match.team_home.name }}</h2>
-            <h1 style="width: 60px; text-align: center; font-weight: bold;">{{ match.scored_home }}:{{ match.scored_away }}</h1>
-            <h2 style="flex: 1; text-align: center;">{{ match.team_away.name  }}</h2>
         </div>
-
         <div class="tables">
             <table class="team-table1">
                 <thead>
                 </thead>
                 <tbody>
-                    {% for player in players1 %}
+                    {% for goal in match.goal_home %}
                     <tr>
-                        <td>{{ player[1].name }} {{ player[1].surname }}</td>
-                        <td>{{ "0"*player[0] }}</td>
+                        {% if  goal.team_id == match.team_home_id %}
+                            <td>{{goal.scorer.name }} {{goal.scorer.surname }}    {{ goal.amount }}&#9917;</td>
+                        {% endif %}
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
+
+        
 
             <!-- Table for Team 2 players -->
             <table class="team-table2">
                 <thead>
                 </thead>
                 <tbody>
-                    {% for player in players2 %}
+                    {% for goal in match.goal_away %}
                     <tr>
-                        <td>{{ "0"*player[0] }}</td>
-                        <td>{{ player[1].name }} {{ player[1].surname }}</td>
+                        {% if  goal.team_id == match.team_away_id %}
+                            <td>&#9917;{{ goal.amount }}   {{goal.scorer.name }} {{goal.scorer.surname }}</td>
+                        {% endif %}
                     </tr>
                     {% endfor %}
                 </tbody>

@@ -1,0 +1,97 @@
+
+{% extends "layout.html" %}
+
+ {% block title %}
+Add League
+ {% endblock %}
+ <style>
+    body {
+        font-family: "Lato", sans-serif;
+        font-size: 20px;
+    }
+    label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+    input[type="text"], input[type="color"] {
+        width: 200px;
+        margin-bottom: 10px;
+    }
+    input[type="number"] {
+        width: 50px;
+        margin-bottom: 10px;
+    }
+    input[type="color"] {
+        height: 30px;
+        width: 30px;
+        padding: 0;
+    }
+    
+    #add-player {
+        margin-top: 10px;
+    }
+
+    .project-container {
+       
+        max-width: 700px;
+        max-height: 1000px;
+      }
+
+   
+
+    button.#create-team {
+        position: absolute;
+        bottom: 20px;
+        right: 20px;
+    }
+</style>
+
+{% block main %} 
+        <div class="projects">
+            <div class="project-container">
+                <form class="addbutton" action="/addplayer" method="post">
+                <h2>New Player</h2>
+
+                <div>
+                    <div style="display: flex; align-items: left; padding:8px;flex-direction: column;">
+    
+                            <input type="hidden" name="leagueid" value="{{ leagueid }}">
+                            <input type="hidden" name="seasonid" value="{{ seasonid }}">
+                            <input type="hidden" name="teamid" value="{{ teamid }}">
+
+                            <div style="padding:8px;">
+                            <label for="player_name">Name:</label>
+                            <input type="text" id="player_name" name="player_name" required>
+                            </div>
+
+                            <div style="padding:8px;">
+                            <label for="player_surname">Surname:</label>
+                            <input type="text" id="player_surname" name="player_surname" required>
+                            </div>
+
+
+                            <div style="padding:8px;">
+                            <label for="shirt_number">Shirt number:</label>
+                            <input type="Number" id="shirt_number" name="shirt_number" required>
+                         </div>
+
+                         <div style="color:red; text-align:center;">
+                            {% if message %}
+                            <a id="error">{{ message }}</a> 
+                            {% endif %}
+                         </div>   
+                   
+                    </div>
+                </div>
+              
+                
+                    <button type="submit">Add Player</button>
+                </form>
+                
+            </div>
+        </div>
+        
+
+{% endblock %}
+ 
