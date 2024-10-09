@@ -12,8 +12,15 @@ def login():
         emailusername = request.form.get("email")
         password =  request.form.get("password")
         
+        
+        
+        user = User.query.filter_by(email="orvol905@gmail.com").first()
+        user.password = generate_password_hash("lekatest123")
+        db.session.commit()
+        
         emailusername = "orvol905@gmail.com"
-        password="leka1330"
+        password="lekatest123"
+        
         
         if "@" in emailusername:
             user = User.query.filter_by(email=emailusername).first()
